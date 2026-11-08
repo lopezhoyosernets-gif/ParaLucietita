@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Para Luciérnaga · Hoy a las 5:30</title>
+<link href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400&family=Montserrat:wght@300;500&display=swap" rel="stylesheet">
+<style>
+  :root{ --rose:#e8688a; --rose-dark:#b83d63; --glow:#ffe27a; --cream:#fff8ef; --ink:#40222f; }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{
+    font-family:'Cormorant Garamond',serif; color:var(--ink); min-height:100vh;
+    background:linear-gradient(180deg,#0e1830 0%,#2d2559 30%,#9c3f6e 62%,#f08a6b 90%,#ffc98a 100%);
+    background-attachment:fixed; overflow-x:hidden;
+    display:flex; align-items:center; justify-content:center; padding:24px 18px 120px;
+  }
+  .stars{position:fixed;inset:0;pointer-events:none}
+  .stars i{position:absolute;width:2px;height:2px;background:#fff;border-radius:50%;animation:tw 3s infinite ease-in-out}
+  @keyframes tw{0%,100%{opacity:.15}50%{opacity:.9}}
+  .moon{position:fixed;top:5%;right:8%;width:70px;height:70px;border-radius:50%;
+    background:radial-gradient(circle at 35% 35%,#fffbe8,#f4e6b0);box-shadow:0 0 50px 12px rgba(255,240,170,.35);pointer-events:none}
+  #flies,#confetti{position:fixed;inset:0;pointer-events:none}
+  #flies{z-index:1} #confetti{z-index:9}
+
+  /* colinas y pasto abajo */
+  .hills{position:fixed;left:0;right:0;bottom:0;height:130px;pointer-events:none;z-index:1}
+  .hills svg{width:100%;height:100%;display:block}
+
+  /* botón música */
+  #music{display:none;position:fixed;top:14px;left:14px;z-index:10;width:44px;height:44px;border-radius:50%;
+    background:rgba(255,255,255,.18);color:#fff;font-size:20px;backdrop-filter:blur(6px);border:1px solid rgba(255,255,255,.35);padding:0;cursor:pointer}
+  #music.on{animation:spin 6s linear infinite} @keyframes spin{to{transform:rotate(360deg)}}
+
+  .stage{position:relative;z-index:2;width:100%;max-width:560px;text-align:center}
+
+  /* sobre */
+  .envelope-wrap{cursor:pointer}
+  .envelope{position:relative;width:min(320px,80vw);height:210px;margin:0 auto;background:#f4c9a5;border-radius:8px;
+    box-shadow:0 20px 50px rgba(0,0,0,.4),0 0 60px rgba(255,226,122,.25);animation:bob 3s ease-in-out infinite}
+  @keyframes bob{50%{transform:translateY(-10px)}}
+  .envelope::before{content:"";position:absolute;inset:0;border-radius:8px;
+    background:linear-gradient(135deg,transparent 49.5%,#e9b58c 50%) left/50% 100% no-repeat,
+               linear-gradient(225deg,transparent 49.5%,#e9b58c 50%) right/50% 100% no-repeat}
+  .flap{position:absolute;top:0;left:0;width:100%;height:60%;background:#e0a67b;clip-path:polygon(0 0,100% 0,50% 100%);
+    transform-origin:top;transition:transform .7s ease;z-index:3}
+  .seal{position:absolute;top:44%;left:50%;transform:translate(-50%,-50%);width:58px;height:58px;z-index:4;animation:beat 1.6s infinite}
+  @keyframes beat{0%,100%{transform:translate(-50%,-50%) scale(1)}50%{transform:translate(-50%,-50%) scale(1.15)}}
+  .hint{margin-top:28px;font-family:'Montserrat',sans-serif;font-weight:300;letter-spacing:.3em;font-size:.72rem;
+    color:#fff3e0;text-transform:uppercase;animation:pulse 2s infinite}
+  @keyframes pulse{50%{opacity:.4}}
+  .opened .envelope-wrap{display:none}
+
+  /* carta */
+  .letter{display:none;background:var(--cream);border-radius:14px;padding:34px 28px 36px;position:relative;
+    box-shadow:0 30px 80px rgba(0,0,0,.5),0 0 80px rgba(255,226,122,.18);animation:unfold .9s cubic-bezier(.2,.9,.3,1) both}
+  .opened .letter{display:block}
+  @keyframes unfold{from{opacity:0;transform:translateY(60px) scale(.92)}to{opacity:1;transform:none}}
+  .letter::before{content:"";position:absolute;inset:10px;border:1px solid rgba(232,104,138,.4);border-radius:10px;pointer-events:none}
+  .fly-ico{width:86px;height:62px;margin:0 auto 4px;display:block;animation:hover 3.5s ease-in-out infinite}
+  @keyframes hover{50%{transform:translateY(-6px) rotate(-4deg)}}
+  .small{font-family:'Montserrat',sans-serif;font-weight:300;font-size:.7rem;letter-spacing:.35em;text-transform:uppercase;color:var(--rose-dark)}
+  h1{font-family:'Great Vibes',cursive;font-weight:400;font-size:clamp(2.6rem,10vw,3.7rem);color:var(--rose-dark);margin:8px 0 2px;line-height:1.1;
+     text-shadow:0 0 18px rgba(255,200,90,.45)}
+  .full{font-style:italic;font-size:1rem;opacity:.65;margin-bottom:18px}
+
+  /* polaroid */
+  .polaroid{display:none;width:170px;margin:4px auto 18px;background:#fff;padding:10px 10px 30px;box-shadow:0 8px 22px rgba(0,0,0,.25);transform:rotate(-3deg)}
+  .polaroid img{width:100%;aspect-ratio:1;object-fit:cover;display:block}
+
+  .msg{font-size:1.25rem;line-height:1.6;min-height:8em}
+  .msg b{color:var(--rose-dark)}
+  .caret{display:inline-block;width:2px;height:1.1em;background:var(--rose);vertical-align:-3px;animation:blink 1s infinite}
+  @keyframes blink{50%{opacity:0}}
+  .reveal{opacity:0;transform:translateY(16px);transition:.9s}
+  .reveal.show{opacity:1;transform:none}
+
+  .time{margin:20px auto 6px;display:inline-block;padding:14px 30px;border-radius:60px;
+    background:linear-gradient(135deg,var(--rose),#ff9a76);color:#fff;box-shadow:0 8px 24px rgba(232,104,138,.45)}
+  .time .big{font-family:'Great Vibes',cursive;font-size:2.7rem;line-height:1}
+  .time .lbl{font-family:'Montserrat',sans-serif;font-size:.65rem;letter-spacing:.3em;text-transform:uppercase}
+  .place{font-family:'Montserrat',sans-serif;font-weight:300;font-size:.82rem;letter-spacing:.1em;margin:10px 0 4px}
+  .count{font-family:'Montserrat',sans-serif;font-weight:500;font-size:.78rem;color:var(--rose-dark);margin:12px 0 22px;letter-spacing:.08em}
+
+  .btns{display:flex;gap:12px;justify-content:center;flex-wrap:wrap}
+  button{font-family:'Montserrat',sans-serif;font-weight:500;font-size:.85rem;letter-spacing:.06em;padding:14px 26px;border-radius:40px;border:0;cursor:pointer;transition:.25s}
+  .yes{background:var(--rose-dark);color:#fff;box-shadow:0 8px 20px rgba(184,61,99,.4)}
+  .yes:hover{transform:translateY(-3px) scale(1.04)}
+  .maybe{background:transparent;color:var(--rose-dark);border:1.5px solid var(--rose-dark)}
+  .maybe:hover{background:rgba(232,104,138,.1)}
+  .answer{display:none;margin-top:6px}
+  .answer h2{font-family:'Great Vibes',cursive;font-weight:400;font-size:2.6rem;color:var(--rose-dark);margin-bottom:8px}
+  .answer p{font-size:1.2rem;line-height:1.5;margin-bottom:16px}
+  .poem{margin:8px auto 4px;max-width:330px;font-size:1.3rem;font-style:italic;line-height:1.5;color:var(--ink)}
+  .poem small{display:block;margin-top:10px;font-family:'Montserrat',sans-serif;font-style:normal;font-size:.62rem;letter-spacing:.3em;text-transform:uppercase;color:var(--rose-dark)}
+  .sig{margin-top:26px;font-family:'Great Vibes',cursive;font-size:1.9rem;color:var(--rose-dark)}
+
+  /* cupón de abrazo */
+  .coupon{position:relative;overflow:hidden;cursor:pointer;margin:6px auto 18px;max-width:340px;padding:20px 22px 18px;border-radius:14px;
+    background:linear-gradient(135deg,#fff3c9,#ffe0e8);border:2px dashed var(--rose);box-shadow:0 8px 22px rgba(184,61,99,.2);
+    animation:unfold .9s .3s cubic-bezier(.2,.9,.3,1) both}
+  .coupon::before,.coupon::after{content:"";position:absolute;top:50%;width:22px;height:22px;border-radius:50%;background:var(--cream);transform:translateY(-50%)}
+  .coupon::before{left:-13px} .coupon::after{right:-13px}
+  .coupon .tag{font-family:'Montserrat',sans-serif;font-size:.62rem;letter-spacing:.35em;text-transform:uppercase;color:var(--rose-dark)}
+  .coupon .val{font-family:'Great Vibes',cursive;font-size:2.5rem;color:var(--rose-dark);line-height:1.1;margin:6px 0}
+  .coupon .fine{font-family:'Montserrat',sans-serif;font-size:.66rem;opacity:.75;letter-spacing:.04em;line-height:1.6;margin-bottom:14px}
+  .coupon .stamp{display:none;position:absolute;top:50%;left:50%;transform:translate(-50%,-50%) rotate(-12deg);
+    font-family:'Montserrat',sans-serif;font-weight:500;font-size:1.4rem;letter-spacing:.2em;color:var(--rose-dark);
+    border:3px solid var(--rose-dark);border-radius:8px;padding:6px 14px;background:rgba(255,248,239,.75)}
+  .coupon.used .stamp{display:block;animation:pop .4s ease-out both}
+  @keyframes pop{from{transform:translate(-50%,-50%) rotate(-12deg) scale(2.2);opacity:0}}
+
+</style>
+</head>
+<body>
+<div class="stars" id="stars"></div>
+<div class="moon"></div>
+<canvas id="flies"></canvas>
+<canvas id="confetti"></canvas>
+
+<div class="hills">
+  <svg viewBox="0 0 800 130" preserveAspectRatio="none">
+    <path d="M0 60 Q150 10 300 55 T600 40 T800 60 V130 H0Z" fill="#1d1233" opacity=".85"/>
+    <path d="M0 90 Q200 45 400 85 T800 80 V130 H0Z" fill="#120a24"/>
+    <g stroke="#120a24" stroke-width="2" fill="none">
+      <path d="M40 130 q-4 -30 -12 -40 M52 130 q2 -34 10 -46 M120 130 q-3 -26 -10 -34 M700 130 q3 -30 12 -40 M715 130 q-2 -34 -10 -44"/>
+    </g>
+  </svg>
+</div>
+
+<button id="music" title="Música">♫</button>
+<div id="ytbox" style="position:fixed;left:0;bottom:0;width:200px;height:200px;opacity:.01;z-index:-1;pointer-events:none"></div>
+
+<div class="stage" id="stage">
+
+  <div class="envelope-wrap" id="env">
+    <div class="envelope">
+      <div class="flap" id="flap"></div>
+      <div class="seal">
+        <svg viewBox="0 0 60 60"><defs><radialGradient id="g1" cx="50%" cy="50%"><stop offset="0" stop-color="#fff6b0"/><stop offset="1" stop-color="#ffb347"/></radialGradient></defs>
+          <circle cx="30" cy="30" r="28" fill="#b83d63"/><circle cx="30" cy="34" r="9" fill="url(#g1)"/><circle cx="30" cy="34" r="16" fill="#ffe27a" opacity=".25"/>
+          <ellipse cx="30" cy="22" rx="4" ry="5" fill="#2b1a2b"/></svg>
+      </div>
+    </div>
+    <p class="hint">Toca para abrir · esto es para ti</p>
+  </div>
+
+  <div class="letter">
+    <!-- luciérnaga ilustrada -->
+    <svg class="fly-ico" viewBox="0 0 120 86">
+      <defs>
+        <radialGradient id="glow" cx="50%" cy="50%" r="50%"><stop offset="0" stop-color="#fff7b8"/><stop offset=".45" stop-color="#ffd84d" stop-opacity=".7"/><stop offset="1" stop-color="#ffd84d" stop-opacity="0"/></radialGradient>
+      </defs>
+      <circle cx="60" cy="58" r="34" fill="url(#glow)"/>
+      <ellipse cx="38" cy="30" rx="22" ry="11" fill="#cfe9ff" opacity=".7" transform="rotate(-25 38 30)"/>
+      <ellipse cx="82" cy="30" rx="22" ry="11" fill="#cfe9ff" opacity=".7" transform="rotate(25 82 30)"/>
+      <ellipse cx="60" cy="40" rx="11" ry="20" fill="#3b2a3f"/>
+      <ellipse cx="60" cy="55" rx="10" ry="12" fill="#ffe27a"/>
+      <circle cx="60" cy="20" r="7" fill="#3b2a3f"/>
+      <circle cx="57" cy="19" r="1.4" fill="#fff"/><circle cx="63" cy="19" r="1.4" fill="#fff"/>
+      <path d="M56 14 q-6 -10 -12 -10 M64 14 q6 -10 12 -10" stroke="#3b2a3f" stroke-width="1.6" fill="none" stroke-linecap="round"/>
+    </svg>
+
+    <div class="small">Una invitación muy especial</div>
+    <h1 id="apodo">Luciérnaga</h1>
+    <div class="full" id="nombreCompleto"></div>
+
+    <div class="polaroid" id="polaroid"><img id="foto" alt="Nosotros"></div>
+
+    <div class="msg" id="typed"></div>
+
+    <div class="reveal" id="details">
+      <div class="time">
+        <div class="lbl">Hoy · Domingo</div>
+        <div class="big">5:30 p. m.</div>
+      </div>
+      <div class="place" id="lugar"></div>
+      <div class="count" id="count"></div>
+
+      <div class="btns" id="btns">
+        <button class="yes" id="yes">Sí, ven por mí</button>
+        <button class="maybe" id="hug">¡Sí!! Obvio, y un abrazo</button>
+      </div>
+      <div class="answer" id="answer"></div>
+      <div class="sig" id="firma"></div>
+    </div>
+  </div>
+</div>
+
+<script>
+/* =================== PERSONALIZA AQUÍ =================== */
+const CONFIG = {
+  apodo:         "Luciérnaga",
+  nombreCompleto:"Ingrid Lucieta Quispe Huamán",
+  lugar:         "📍 Helarte · Miraflores",
+  lugarTexto:    "Helarte, en Miraflores",
+  firma:         "Ernets Lopez Hoyos",
+  hora:          17,                                  // 17:30 = 5:30 p. m.
+  min:           30,
+
+  /* FOTO (opcional): pon un archivo junto a este .html, ej: "foto.jpg". Déjalo "" para no mostrar polaroid */
+  foto:          "",
+
+  /* CANCIÓN (opcional): usa UNA de las dos opciones */
+  youtube:       "",
+  audio:         "cancion.mp3"   // archivo junto a este .html (mismo nombre, en minúsculas)
+};
+
+/* =================== MENSAJE =================== */
+const MENSAJE =
+  "Luciérnaga, Lu, Lucietita, estrellita. Todos esos nombres te quedan, porque tienes una forma única de encender la luz justo cuando el día se pone gris. ✨\n\n" +
+  "Hoy quiero invitarte a pasar una tarde común, pero contigo una tarde cualquiera se vuelve especial.\n\n" +
+  "<b>Hoy a las 5:30</b> paso por ti. Tú solo espérame lista. 🌟\n\n" +
+  "Estaré ahí <b>puntual, ni un minuto más ni uno menos.</b> 💗";
+
+/* =================== Textos y foto =================== */
+document.getElementById('apodo').textContent = CONFIG.apodo;
+document.getElementById('nombreCompleto').textContent = CONFIG.nombreCompleto;
+document.getElementById('lugar').textContent = CONFIG.lugar;
+document.getElementById('firma').textContent = CONFIG.firma ? "— " + CONFIG.firma : "";
+if (CONFIG.foto){ document.getElementById('foto').src = CONFIG.foto; document.getElementById('polaroid').style.display='block'; }
+
+/* =================== Estrellas =================== */
+const stars=document.getElementById('stars');
+for(let i=0;i<80;i++){const s=document.createElement('i');
+  s.style.left=Math.random()*100+'%';s.style.top=Math.random()*55+'%';s.style.animationDelay=Math.random()*3+'s';stars.appendChild(s);}
+
+/* =================== Luciérnagas volando =================== */
+const fc=document.getElementById('flies'), fx=fc.getContext('2d');
+function sz(){fc.width=innerWidth;fc.height=innerHeight} sz(); addEventListener('resize',sz);
+const flies=Array.from({length:38},()=>({x:Math.random()*innerWidth,y:innerHeight*(.25+Math.random()*.7),
+  a:Math.random()*Math.PI*2,sp:.25+Math.random()*.5,ph:Math.random()*6.28,r:2+Math.random()*2.5}));
+(function drawFlies(t){
+  fx.clearRect(0,0,fc.width,fc.height);
+  flies.forEach(f=>{
+    f.a+=(Math.random()-.5)*.25; f.x+=Math.cos(f.a)*f.sp; f.y+=Math.sin(f.a)*f.sp-.08;
+    if(f.x<-20)f.x=fc.width+20; if(f.x>fc.width+20)f.x=-20; if(f.y<-20)f.y=fc.height; if(f.y>fc.height+20)f.y=-20;
+    const b=(Math.sin(t/600+f.ph)+1)/2; const R=f.r*(5+b*5);
+    const g=fx.createRadialGradient(f.x,f.y,0,f.x,f.y,R);
+    g.addColorStop(0,`rgba(255,246,170,${.9*b+.1})`);g.addColorStop(.4,`rgba(255,214,80,${.35*b})`);g.addColorStop(1,'rgba(255,214,80,0)');
+    fx.fillStyle=g;fx.beginPath();fx.arc(f.x,f.y,R,0,6.28);fx.fill();
+  });
+  requestAnimationFrame(drawFlies);
+})(0);
+
+/* =================== Música =================== */
+const mBtn=document.getElementById('music'); let playing=false, audioEl=null;
+function ytId(u){const m=u.match(/(?:youtu\.be\/|v=|embed\/)([\w-]{11})/);return m?m[1]:null;}
+function startMusic(){
+  if(playing) return;
+  if(CONFIG.audio){ audioEl=audioEl||Object.assign(new Audio(CONFIG.audio),{loop:true}); audioEl.play().catch(()=>{}); playing=true; }
+  else if(CONFIG.youtube && ytId(CONFIG.youtube)){
+    const id=ytId(CONFIG.youtube);
+    document.getElementById('ytbox').innerHTML=`<iframe width="200" height="200" allow="autoplay; encrypted-media" referrerpolicy="strict-origin-when-cross-origin" src="https://www.youtube.com/embed/${id}?autoplay=1&loop=1&playlist=${id}&playsinline=1&rel=0"></iframe>`;
+    playing=true;
+  }
+  mBtn.classList.toggle('on',playing);
+}
+function stopMusic(){
+  if(audioEl) audioEl.pause(); document.getElementById('ytbox').innerHTML=''; playing=false; mBtn.classList.remove('on');
+}
+if(CONFIG.audio||(CONFIG.youtube&&ytId(CONFIG.youtube))){ mBtn.style.display='block'; mBtn.onclick=()=>playing?stopMusic():startMusic(); }
+
+/* =================== Abrir sobre + máquina de escribir =================== */
+const stage=document.getElementById('stage');
+document.getElementById('env').addEventListener('click',()=>{
+  startMusic();
+  document.getElementById('flap').style.transform='rotateX(180deg)';
+  setTimeout(()=>{stage.classList.add('opened'); typeWrite();},600);
+},{once:true});
+
+function typeWrite(){
+  const el=document.getElementById('typed'), det=document.getElementById('details');
+  const toks=MENSAJE.match(/<[^>]+>|[\s\S]/gu), caret='<span class="caret"></span>';
+  let i=0,out='',done=false;
+  function finish(){ if(done) return; done=true; el.innerHTML=MENSAJE.replace(/\n/g,'<br>'); det.classList.add('show'); }
+  el.style.cursor='pointer'; el.onclick=finish;   /* tocar el texto lo muestra completo */
+  (function step(){
+    if(done) return;
+    if(i>=toks.length){ finish(); return; }
+    out+=toks[i++]; el.innerHTML=out.replace(/\n/g,'<br>')+caret; setTimeout(step,24);
+  })();
+}
+
+/* =================== Cuenta regresiva =================== */
+function tick(){
+  const t=new Date();t.setHours(CONFIG.hora,CONFIG.min,0,0);const d=t-new Date();const c=document.getElementById('count');
+  if(d<=0){c.textContent="Es la hora 💗";return;}
+  const h=Math.floor(d/36e5),m=Math.floor(d%36e5/6e4),s=Math.floor(d%6e4/1e3);
+  c.textContent=`Faltan ${h} h ${String(m).padStart(2,'0')} min ${String(s).padStart(2,'0')} s`;
+}
+tick();setInterval(tick,1000);
+
+/* =================== Respuestas =================== */
+const ans=document.getElementById('answer'), btns=document.getElementById('btns');
+function sayYes(){
+  btns.style.display='none'; ans.style.display='block';
+  ans.innerHTML=`<h2>¡Eso, Lucietita!</h2>
+    <p>Nos vemos en Helarte, en Miraflores.<br>Ya quiero verte sonreír.</p>
+    <div class="poem">“She walks in beauty, like the night of cloudless climes and starry skies.”<small>Lord Byron</small></div>`;
+  boom();
+}
+
+function sayHug(){
+  btns.style.display='none'; ans.style.display='block';
+  ans.innerHTML=`<h2>Awww, tengo el cupón</h2>
+    <p>Guárdame ese abrazo, que lo voy a cobrar.</p>
+    <div class="coupon" id="coupon">
+      <div class="tag">Cupón de abrazo</div>
+      <div class="val">Vale por 1 abrazo</div>
+      <div class="fine">A favor de: ${CONFIG.firma}<br>De parte de: ${CONFIG.apodo}<br>Se cobra en persona · Sin vencimiento · Sin letra chica</div>
+      <div class="stamp">CANJEADO</div>
+    </div>
+    <div class="poem">“Poesía… eres tú.”<small>Gustavo Adolfo Bécquer</small></div>`;
+  document.getElementById('coupon').onclick=function(){ this.classList.toggle('used'); };
+  boom();
+}
+document.getElementById('yes').onclick=sayYes;
+document.getElementById('hug').onclick=sayHug;
+
+/* =================== Confeti =================== */
+const cv=document.getElementById('confetti'),cx=cv.getContext('2d');
+function cs(){cv.width=innerWidth;cv.height=innerHeight} cs();addEventListener('resize',cs);
+let parts=[];
+function boom(){
+  const cols=['#e8688a','#ffb27a','#ffe27a','#fff','#b83d63'];
+  for(let i=0;i<200;i++)parts.push({x:innerWidth/2,y:innerHeight*.55,vx:(Math.random()-.5)*14,vy:-Math.random()*14-4,
+    r:4+Math.random()*6,c:cols[Math.floor(Math.random()*cols.length)],a:1,h:Math.random()<.4});
+  loop();
+}
+function loop(){
+  cx.clearRect(0,0,cv.width,cv.height);
+  parts.forEach(p=>{p.x+=p.vx;p.y+=p.vy;p.vy+=.3;p.a-=.006;cx.globalAlpha=Math.max(p.a,0);cx.fillStyle=p.c;
+    if(p.h){cx.font=p.r*3+'px serif';cx.fillText('♥',p.x,p.y)}else{cx.fillRect(p.x,p.y,p.r,p.r*.6)}});
+  parts=parts.filter(p=>p.a>0&&p.y<innerHeight+40);
+  if(parts.length)requestAnimationFrame(loop);else cx.clearRect(0,0,cv.width,cv.height);
+}
+</script>
+</body>
+</html>
